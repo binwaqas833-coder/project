@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bin Waqas · 5G Wi-Fi Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+ <style>
+        :root {
+            --bg: transparent;
+            --surface: rgba(255,255,255,0.18);
+            --surface2: rgba(255,255,255,0.10);
+            --border: rgba(255,255,255,0.35);
+            --border2: rgba(255,255,255,0.20);
+            --accent: #07f793;
+            --accent2: #3fc7fd;
+            --accent3: #1a34b7;
+            --text: #fff;
+            --text-dim: rgba(255,255,255,0.65);
+            --text-muted: rgba(255,255,255,0.35);
+            --red: #ff3d57;
+            --sidebar: 270px;
+            --radius: 14px;
+            --blur: blur(18px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-image: url(beach5.jpg);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Soft dark overlay so text stays readable */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.28);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ═══════════════════════════════
+           SIDEBAR
+        ═══════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar);
+            background: var(--surface);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 100;
+            transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+        }
+
+        .sidebar-brand {
+            padding: 28px 24px 22px;
+            border-bottom: 1px solid var(--border);
+        }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+        .brand-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--accent), #00a86b);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            font-size: 16px;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0,220,130,0.4);
+        }
+        .brand-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 17px;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+        .brand-sub {
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            padding-left: 50px;
+        }
+
+        .sidebar-section-label {
+            font-size: 9px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 20px 24px 8px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .sidebar-menu { list-style: none; padding: 0 12px; display: flex; flex-direction: column; gap: 2px; }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .sidebar-menu a .nav-icon {
+            width: 32px; height: 32px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            font-size: 13px;
+            background: transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .sidebar-menu a:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+        .sidebar-menu a:hover .nav-icon { background: rgba(0,220,130,0.08); color: var(--accent); }
+        .sidebar-menu li.active a {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(0,220,130,0.12), rgba(0,220,130,0.04));
+            border: 1px solid rgba(0,220,130,0.15);
+        }
+        .sidebar-menu li.active a .nav-icon { background: rgba(0,220,130,0.15); color: var(--accent); }
+        .sidebar-menu li.active a::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 20%; bottom: 20%;
+            width: 3px;
+            background: var(--accent);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+        }
+        .signal-meter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        .signal-bars { display: flex; gap: 3px; align-items: flex-end; }
+        .signal-bars span {
+            width: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: pulse-bar 2s ease-in-out infinite;
+        }
+        .signal-bars span:nth-child(1) { height: 8px; animation-delay: 0s; }
+        .signal-bars span:nth-child(2) { height: 13px; animation-delay: 0.2s; }
+        .signal-bars span:nth-child(3) { height: 18px; animation-delay: 0.4s; }
+        .signal-bars span:nth-child(4) { height: 24px; animation-delay: 0.6s; opacity: 0.3; }
+        @keyframes pulse-bar { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* ═══════════════════════════════
+           MAIN
+        ═══════════════════════════════ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar);
+            padding: 28px;
+            position: relative;
+            z-index: 1;
+            max-width: calc(100% - var(--sidebar));
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 0 4px;
+        }
+        .menu-toggle { display: none; background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; }
+        .topbar-left h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        .topbar-left p { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+        .topbar-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .topbar-pill .dot-live {
+            width: 7px; height: 7px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: live-pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 6px var(--accent);
+        }
+        @keyframes live-pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.6; } }
+
+        .admin-badge {
+            background: linear-gradient(135deg, rgba(0,220,130,0.15), rgba(0,220,130,0.05));
+            border: 1px solid rgba(0,220,130,0.25);
+            border-radius: 50px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* ── PANEL BASE ── */
+        .panel {
+            background: var(--surface);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius);
+            padding: 22px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,220,130,0.3), transparent);
+        }
+
+        .panel-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .panel-title h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-title h3 i { color: var(--accent); font-size: 13px; }
+
+        /* ── STAT CARDS ── */
+        .cards-grid {
+            font-family: 'Poppins', sans-serif;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--surface);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: default;
+        }
+        .stat-card:hover { transform: translateY(-2px); border-color: var(--border); }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+        }
+        .stat-card.c1::before { background: linear-gradient(90deg, var(--accent), transparent); }
+        .stat-card.c2::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+        .stat-card.c3::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+        .stat-card.c4::before { background: linear-gradient(90deg, #a78bfa, transparent); }
+
+        .stat-label {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 12px;
+        }
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .stat-sub { font-size: 11px; color: var(--text-dim); margin-top: 6px; }
+        .stat-icon {
+            position: absolute;
+            right: 18px; top: 18px;
+            font-size: 18px;
+            opacity: 0.15;
+        }
+        .stat-card.c1 .stat-icon { color: var(--accent); }
+        .stat-card.c2 .stat-icon { color: var(--accent2); }
+        .stat-card.c3 .stat-icon { color: var(--accent3); }
+        .stat-card.c4 .stat-icon { color: #a78bfa; }
+
+        .stat-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 8px;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+        .stat-change.up { background: rgba(0,220,130,0.1); color: var(--accent); }
+
+        /* ── TARIFF PACKAGES ── */
+        .tariff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        .tariff-card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: border-color 0.2s;
+        }
+        .tariff-card:hover { border-color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.18); }
+        .tariff-top { display: flex; align-items: center; gap: 10px; }
+        .tariff-ico {
+            width: 36px; height: 36px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .tariff-ico.g { background: rgba(0,220,130,0.12); color: var(--accent); }
+        .tariff-ico.b { background: rgba(0,184,255,0.12); color: var(--accent2); }
+        .tariff-ico.o { background: rgba(255,107,53,0.12); color: var(--accent3); }
+        .tariff-name { font-size: 13px; font-weight: 700; color: #fff; font-family: 'Syne', sans-serif; }
+        .tariff-meta { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+        .tariff-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .speed-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .speed-tag.g { background: rgba(0,220,130,0.1); color: var(--accent); border: 1px solid rgba(0,220,130,0.2); }
+        .speed-tag.b { background: rgba(0,184,255,0.1); color: var(--accent2); border: 1px solid rgba(0,184,255,0.2); }
+        .speed-tag.o { background: rgba(255,107,53,0.1); color: var(--accent3); border: 1px solid rgba(255,107,53,0.2); }
+        .btn-edit {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 5px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ── STATIONS ── */
+        .stations-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+        .station-box {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .station-box:hover { border-color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.18); }
+        .station-box h4 { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 8px; font-family: 'Space Mono', monospace; }
+        .station-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+        .dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse-dot 2s infinite; }
+        .dot.off { background: var(--red); }
+        .station-status.on { color: var(--accent); }
+        .station-status.off { color: var(--red); }
+        @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* ── 2-COL GRID ── */
+        .main-grid { display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
+
+        /* ── SEARCH BAR ── */
+        .search-bar { display: flex; gap: 10px; margin-bottom: 16px; }
+        .search-input, .filter-select {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 9px;
+            padding: 10px 14px;
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input { flex: 1; }
+        .search-input:focus, .filter-select:focus { border-color: rgba(255,255,255,0.5); }
+        .search-input::placeholder { color: rgba(255,255,255,0.4); }
+        .filter-select option { background: #1a2a3a; color: #fff; }
+
+        /* ── TABLES ── */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
+        thead th {
+            padding: 10px 12px;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            text-align: left;
+        }
+        tbody td {
+            padding: 14px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            color: #fff;
+            vertical-align: middle;
+        }
+        tbody tr:hover { background: rgba(255,255,255,0.06); }
+        tbody tr:last-child td { border-bottom: none; }
+        code {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--accent2);
+            background: rgba(0,184,255,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .badge {
+            font-family: 'Poppins', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 5px;
+        }
+        .badge.siku { background: rgba(0,220,130,0.1); color: var(--red); border: 1px solid rgba(0,220,130,0.2); }
+        .badge.wiki { background: rgba(0,184,255,0.1); color: var(--accent2); border: 1px solid rgba(0,184,255,0.2); }
+        .badge.mwezi { background: rgba(255,107,53,0.1); color: var(--accent); border: 1px solid rgba(255,107,53,0.2); }
+        .badge.live { background: rgba(0,220,130,0.1); color: var(--accent); border: 1px solid rgba(0,220,130,0.2); animation: blink 2s linear infinite; }
+        @keyframes blink { 50% { opacity: 0.6; } }
+
+        .divider { height: 1px; background: var(--border2); margin: 22px 0; }
+
+        /* ── BUTTONS ── */
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: #00f090; transform: translateY(-1px); }
+
+        .btn-ghost-red {
+            background: none;
+            border: 1px solid rgba(255,61,87,0.25);
+            color: var(--red);
+            padding: 6px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+        .btn-ghost-red:hover { background: rgba(255,61,87,0.08); }
+
+        .btn-ghost-orange {
+            background: none;
+            border: 1px solid rgba(255,107,53,0.25);
+            color: var(--red);
+            padding: 6px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .btn-ghost-orange:hover { background: rgba(255,107,53,0.08); }
+
+        /* ── SIDEBAR RIGHT PANELS ── */
+        .status-list { list-style: none; }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 12.5px;
+        }
+        .status-item:last-child { border-bottom: none; }
+        .status-label { color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 8px; }
+        .status-label i { font-size: 11px; }
+        .val-ok { color: var(--accent); font-weight: 700;  font-family: 'Poppins', sans-serif; font-size: 11px; }
+        .val-num { color: var(--text); font-family: 'Space Mono', monospace; font-size: 11px; }
+
+        /* ── CHART ── */
+        canvas { display: block; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: rgba(255,255,255,0.20);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 18px;
+            padding: 28px;
+            width: 90%;
+            max-width: 380px;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-box { transform: translateY(0); }
+        .modal-box h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-box h3 i { color: var(--accent); }
+        .modal-label { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        .modal-select {
+            width: 100%;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.30);
+            border-radius: 9px;
+            padding: 11px 14px;
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        .modal-select option { background: #1a3040; color: #fff; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn-cancel {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            color: var(--text-dim);
+            padding: 9px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .btn-cancel:hover { color: var(--text); }
+
+        /* ── FOOTER ── */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            margin-top: 8px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.543);
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+    /*topbar */
+    .topbar {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center; 
+        gap: 15px; 
+    }
+
+    /*  menu */
+    .menu-toggle {
+        font-size: 20px;
+        padding: 5px;
+        margin-top: -60px; 
+        display: block;
+    }
+    .page-title h2 {
+        font-size: 16px; 
+    }
+}
+        @media (max-width: 1200px) {
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
+            .main-grid { grid-template-columns: 1fr; }
+            .tariff-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .stations-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; max-width: 100%; padding: 16px; }
+            .menu-toggle { display: block; }
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
+            .tariff-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            .stations-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+<body>
+    <!-- ═══ SIDEBAR ═══ -->
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">
+            <div class="brand-icon"><i class="fa-solid fa-wifi"></i></div>
+            <div>
+                <div class="brand-name">Bin Waqas</div>
+            </div>
+        </div>
+        <div class="brand-sub">5G Wi-Fi Premium</div>
+    </div>
+
+    <div class="sidebar-section-label">Navigation</div>
+    <ul class="sidebar-menu">
+        <li class="active">
+            <a href="#">
+                <div class="nav-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <div class="nav-icon"><i class="fa-solid fa-users"></i></div>
+                Wateja Active
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <div class="nav-icon"><i class="fa-solid fa-ticket"></i></div>
+                Vocha Mfumo
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <div class="nav-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+                Vituo (Stations)
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <div class="nav-icon"><i class="fa-solid fa-sliders"></i></div>
+                Mipangilio
+            </a>
+        </li>
+    </ul>
+
+    <div class="sidebar-footer">
+        <div class="signal-meter">
+            <div class="signal-bars">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <span>Signal ya Mfumo OK</span>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main-content">
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="topbar-left">
+            <h2>Usimamizi wa Wi-Fi</h2>
+            <p>Karibu, tazama hali ya mfumo wako</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-pill">
+                <div class="dot-live"></div>
+                LIVE
+            </div>
+            <div class="admin-badge">
+                <i class="fa-solid fa-user-shield"></i>
+                Bin Waqas
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Cards -->
+    <section class="cards-grid">
+        <div class="stat-card c1">
+            <div class="stat-label">Mapato ya Leo</div>
+            <div class="stat-value">17,000</div>
+            <div class="stat-sub">Tsh · Jumamosi</div>
+            <div class="stat-change up"><i class="fa-solid fa-arrow-up" style="font-size:8px;"></i> +12% jana</div>
+            <i class="fa-solid fa-money-bill-wave stat-icon"></i>
+        </div>
+        <div class="stat-card c2">
+            <div class="stat-label">Wiki Hii</div>
+            <div class="stat-value">112,000</div>
+            <div class="stat-sub">Tsh · Wiki ya 21</div>
+            <div class="stat-change up"><i class="fa-solid fa-arrow-up" style="font-size:8px;"></i> +8% wiki iliyopita</div>
+            <i class="fa-solid fa-chart-line stat-icon"></i>
+        </div>
+        <div class="stat-card c3">
+            <div class="stat-label">Mwezi Huu</div>
+            <div class="stat-value">490,000</div>
+            <div class="stat-sub">Tsh · Mei 2026</div>
+            <div class="stat-change up"><i class="fa-solid fa-arrow-up" style="font-size:8px;"></i> +22% mwezi uliopita</div>
+            <i class="fa-solid fa-wallet stat-icon"></i>
+        </div>
+        <div class="stat-card c4">
+            <div class="stat-label">Wateja Active</div>
+            <div class="stat-value">18</div>
+            <div class="stat-sub">Wanaotumia sasa hivi</div>
+            <div class="stat-change up" style="background:rgba(167,139,250,0.1); color:#a78bfa;"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Online</div>
+            <i class="fa-solid fa-users stat-icon"></i>
+        </div>
+    </section>
+
+    <!-- Vifurushi -->
+    <section class="panel">
+        <div class="panel-title">
+            <h3><i class="fa-solid fa-sliders"></i> Vifurushi vya Mtandao</h3>
+        </div>
+        <div class="tariff-grid">
+            <div class="tariff-card">
+                <div class="tariff-top">
+                    <div class="tariff-ico g"><i class="fa-solid fa-clock"></i></div>
+                    <div>
+                        <div class="tariff-name">Kifurushi cha Siku</div>
+                        <div class="tariff-meta">Tsh 1,000 · Masaa 24</div>
+                    </div>
+                </div>
+                <div class="tariff-bottom">
+                    <span class="speed-tag g">4 Mbps</span>
+                    <button class="btn-edit" onclick="haririKifurushi('Siku', 1000, '4 Mbps')">Hariri</button>
+                </div>
+            </div>
+            <div class="tariff-card">
+                <div class="tariff-top">
+                    <div class="tariff-ico b"><i class="fa-solid fa-calendar-days"></i></div>
+                    <div>
+                        <div class="tariff-name">Kifurushi cha Wiki</div>
+                        <div class="tariff-meta">Tsh 5,000 · Siku 7</div>
+                    </div>
+                </div>
+                <div class="tariff-bottom">
+                    <span class="speed-tag b">8 Mbps</span>
+                    <button class="btn-edit" onclick="haririKifurushi('Wiki', 5000, '8 Mbps')">Hariri</button>
+                </div>
+            </div>
+            <div class="tariff-card">
+                <div class="tariff-top">
+                    <div class="tariff-ico o"><i class="fa-solid fa-calendar-plus"></i></div>
+                    <div>
+                        <div class="tariff-name">Kifurushi cha Mwezi</div>
+                        <div class="tariff-meta">Tsh 10,000 · Siku 30</div>
+                    </div>
+                </div>
+                <div class="tariff-bottom">
+                    <span class="speed-tag o">10 Mbps</span>
+                    <button class="btn-edit" onclick="haririKifurushi('Mwezi', 10000, '10 Mbps')">Hariri</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stations -->
+    <section class="panel">
+        <div class="panel-title">
+            <h3><i class="fa-solid fa-tower-broadcast"></i> Hali ya Vituo (Stations)</h3>
+            <span style="font-family: 'Poppins', sans-serif;font-size:11px; color:var(--text-dim);">5/6 <span style="color:var(--accent);">ONLINE</span></span>
+        </div>
+        <div class="stations-grid">
+            <div class="station-box">
+                <h4>Station A</h4>
+                <div class="station-status on"><div class="dot on"></div>ONLINE</div>
+            </div>
+            <div class="station-box">
+                <h4>Station B</h4>
+                <div class="station-status on"><div class="dot on"></div>ONLINE</div>
+            </div>
+            <div class="station-box">
+                <h4>Station C</h4>
+                <div class="station-status on"><div class="dot on"></div>ONLINE</div>
+            </div>
+            <div class="station-box">
+                <h4>Station D</h4>
+                <div class="station-status on"><div class="dot on"></div>ONLINE</div>
+            </div>
+            <div class="station-box">
+                <h4>Station E</h4>
+                <div class="station-status on"><div class="dot on"></div>ONLINE</div>
+            </div>
+            <div class="station-box" style="border-color:rgba(250, 4, 36, 0.2);">
+                <h4>Station F</h4>
+                <div class="station-status off"><div class="dot off"></div>OFFLINE</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main 2-Col Grid -->
+    <div class="main-grid">
+
+        <!-- LEFT: Tables -->
+        <div>
+            <section class="panel">
+                <div class="panel-title">
+                    <h3><i class="fa-solid fa-ticket"></i> Vocha Zilizolipiwa Karibuni</h3>
+                    <button class="btn-primary" onclick="funguaModalVocha()">
+                        <i class="fa-solid fa-plus"></i> Vocha ya Bure
+                    </button>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="searchBox" onkeyup="tafutaKwenyeJedwali()" placeholder="Saka namba au vocha...">
+                    <select class="filter-select" id="filterBox" onchange="tafutaKwenyeJedwali()">
+                        <option value="">Vifurushi Vyote</option>
+                        <option value="Siku">Siku</option>
+                        <option value="Wiki">Wiki</option>
+                        <option value="Mwezi">Mwezi</option>
+                    </select>
+                </div>
+
+                <div class="table-wrap">
+                    <table id="vochaTable">
+                        <thead>
+                            <tr>
+                                <th>Namba ya Simu</th>
+                                <th>Kifurushi</th>
+                                <th>Kodi ya Vocha</th>
+                                <th>Muamala</th>
+                                <th>Muda</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="mstari-1">
+                                <td>0777 123 456</td> 
+                                <td><span class="badge siku">SIKU</span></td>
+                                <td><code>5G-8821</code></td>
+                                <td>HaloPesa</td>
+                                <td style="color:var(--text-dim); font-size:12px;">Dk 2 zilizopita</td>
+                                <td><button class="btn-ghost-red" onclick="futaVocha('mstari-1','5G-8821')"><i class="fa-solid fa-trash-can"></i></button></td>
+                            </tr>
+                            <tr id="mstari-2">
+                                <td>0654 987 654</td>
+                                <td><span class="badge wiki">WIKI</span></td>
+                                <td><code>5G-3394</code></td>
+                                <td>M-Pesa</td>
+                                <td style="color:var(--text-dim); font-size:12px;">Saa 1 lililopita</td>
+                                <td><button class="btn-ghost-red" onclick="futaVocha('mstari-2','5G-3394')"><i class="fa-solid fa-trash-can"></i></button></td>
+                            </tr>
+                            <tr id="mstari-3">
+                                <td>0773 555 444</td>
+                                <td><span class="badge siku">SIKU</span></td>
+                                <td><code>5G-1044</code></td>
+                                <td>Mixx by Yas</td>
+                                <td style="color:var(--text-dim); font-size:12px;">Saa 3 yaliyopita</td>
+                                <td><button class="btn-ghost-red" onclick="futaVocha('mstari-3','5G-1044')"><i class="fa-solid fa-trash-can"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="panel-title" style="margin-bottom:16px;">
+                    <h3><i class="fa-solid fa-users-line"></i> Watumiaji Active Sasa</h3>
+                    <span class="badge live"><i class="fa-solid fa-circle" style="font-size:7px;"></i> &nbsp;2 ACTIVE</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Namba ya Simu</th>
+                                <th>Kifurushi</th>
+                                <th>IP Address</th>
+                                <th>Data Alizotumia</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="user-active-1">
+                                <td>0772 888 111</td>
+                                <td><span class="badge siku">SIKU</span></td>
+                                <td><code>10.5.50.21</code></td>
+                                <td><strong>420 MB</strong></td>
+                                <td><button class="btn-ghost-orange" onclick="kickUser('user-active-1','0772888111')">Kata Internet</button></td>
+                            </tr>
+                            <tr id="user-active-2">
+                                <td>0621 444 555</td>
+                                <td><span class="badge mwezi">MWEZI</span></td>
+                                <td><code>10.5.50.88</code></td>
+                                <td><strong>2.4 GB</strong></td>
+                                <td><button class="btn-ghost-orange" onclick="kickUser('user-active-2','0621444555')">Kata Internet</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- RIGHT: Chart + Status -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+
+            <section class="panel">
+                <div class="panel-title">
+                    <h3><i class="fa-solid fa-chart-line" style="color:var(--accent2);"></i> Mwenendo wa Wiki</h3>
+                </div>
+                <canvas id="grafuYaMapato" height="140"></canvas>
+            </section>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <h3><i class="fa-solid fa-server"></i> Hali ya Mfumo</h3>
+                </div>
+                <ul class="status-list">
+                    <li class="status-item">
+                        <span class="status-label"><i class="fa-solid fa-circle" style="color:var(--accent); font-size:8px;"></i> MikroTik L009</span>
+                        <span class="val-ok">ONLINE</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-label"><i class="fa-solid fa-microchip"></i> CPU Matumizi</span>
+                        <span class="val-num">14%</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-label"><i class="fa-solid fa-database"></i> Database MySQL</span>
+                        <span class="val-ok">CONNECTED</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-label"><i class="fa-solid fa-shield-halved"></i> Firewall</span>
+                        <span class="val-ok">ACTIVE</span>
+                    </li>
+                </ul>
+            </section>
+
+        </div>
+    </div>
+
+    <footer class="footer">© 2026 Bin Waqas Wi-Fi System &nbsp;·&nbsp; Haki zote zimehifadhiwa</footer>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="vochaModal">
+    <div class="modal-box">
+        <h3><i class="fa-solid fa-gift"></i> Gawa Vocha ya Bure</h3>
+        <div class="modal-label">Chagua Muda wa Vocha</div>
+        <select id="mudaWaBure" class="modal-select">
+            <option value="Saa 1">Saa 1 — Majaribio</option>
+            <option value="Siku 1">Siku 1 — (4 Mbps)</option>
+            <option value="Wiki 1">Wiki 1 — (8 Mbps)</option>
+            <option value="Mwezi 1">Mwezi 1 — (10 Mbps)</option>
+        </select>
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="fungaModalVocha()">Ghairi</button>
+            <button class="btn-primary" onclick="tengenezaVochaBureHalisi()">
+                <i class="fa-solid fa-sparkles"></i> Tengeneza
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("active");
+}
+
+// Chart
+const ctx = document.getElementById('grafuYaMapato').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jtt', 'Jnn', 'Jtno', 'Alh', 'Ij', 'Jmo', 'Jpi'],
+        datasets: [{
+            label: 'Mapato (Tsh)',
+            data: [15000, 22000, 18000, 25000, 35000, 48000, 40000],
+            backgroundColor: 'rgba(0,220,130,0.06)',
+            borderColor: '#00dc82',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#00dc82',
+            pointBorderColor: '#050c12',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5d8a78', font: { family: 'Space Mono', size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5d8a78', font: { family: 'Space Mono', size: 10 } }, beginAtZero: true }
+        }
+    }
+});
+
+function funguaModalVocha() { document.getElementById("vochaModal").classList.add("active"); }
+function fungaModalVocha() { document.getElementById("vochaModal").classList.remove("active"); }
+
+function haririKifurushi(jina, bei, kasi) {
+    let mpyaBei = prompt("Ingiza bei mpya ya kifurushi cha " + jina + ":", bei);
+    let mpyaKasi = prompt("Ingiza kasi mpya ya " + jina + ":", kasi);
+}
+
+function kickUser(id, namba) {
+    if (confirm("Umuhakikisha unataka kumkata: " + namba + "?")) {
+        document.getElementById(id).style.display = 'none';
+    }
+}
+
+function futaVocha(id, kodi) {
+    if (confirm("Una uhakika unataka kuifuta vocha " + kodi + "?")) {
+        document.getElementById(id).style.display = 'none';
+    }
+}
+
+function tengenezaVochaBureHalisi() {
+    const muda = document.getElementById("mudaWaBure").value;
+    alert("✅ Vocha ya " + muda + " imetengenezwa!");
+    fungaModalVocha();
+}
+
+function tafutaKwenyeJedwali() {
+    let input = document.getElementById("searchBox").value.toLowerCase();
+    let filter = document.getElementById("filterBox").value.toLowerCase();
+    let table = document.getElementById("vochaTable");
+    let rows = table.getElementsByTagName("tr");
+    for (let i = 1; i < rows.length; i++) {
+        let tds = rows[i].getElementsByTagName("td");
+        if (tds.length < 3) continue;
+        let simu = tds[0].textContent.toLowerCase();
+        let bando = tds[1].textContent.toLowerCase();
+        let vocha = tds[2].textContent.toLowerCase();
+        let matchSearch = simu.includes(input) || vocha.includes(input);
+        let matchFilter = filter === "" || bando.includes(filter);
+        rows[i].style.display = (matchSearch && matchFilter) ? "" : "none";
+    }
+}
+</script>
+</body>
+</html>
