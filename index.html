@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bin Waqas · 5G Wi-Fi Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
- <style>
+    <style>
         :root {
             --bg: transparent;
             --surface: rgba(255,255,255,0.18);
@@ -651,7 +652,14 @@
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
-    /*topbar */
+    /* 1. Kuficha sidebar */
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.active { transform: translateX(0); }
+    
+    /* 2. Kurekebisha layout ya main content */
+    .main-content { margin-left: 0; max-width: 100%; padding: 16px; }
+    
+    /* 3. Kurekebisha Topbar ili vitu vikae vizuri */
     .topbar {
         padding: 10px 15px;
         margin-bottom: 15px;
@@ -660,17 +668,18 @@
         gap: 15px; 
     }
 
-    /*  menu */
-    .menu-toggle {
+    .menu-toggle { 
+        display: block !important; /* Lazimisha ionekane */
         font-size: 20px;
         padding: 5px;
-        margin-top: -60px; 
-        display: block;
+        margin-top: -60px;
+        background: none; border: none; color: white;
     }
-    .page-title h2 {
-        font-size: 16px; 
-    }
+
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    .tariff-grid { grid-template-columns: 1fr; }
 }
+ 
         @media (max-width: 1200px) {
             .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .main-grid { grid-template-columns: 1fr; }
@@ -692,8 +701,10 @@
             .stations-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
+</head>
 <body>
-    <!-- ═══ SIDEBAR ═══ -->
+
+<!-- ═══ SIDEBAR ═══ -->
 <nav class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <div class="brand-logo">
@@ -1050,9 +1061,10 @@
 </div>
 
 <script>
-function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("active");
-}
+ function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('active');
+    }
 
 // Chart
 const ctx = document.getElementById('grafuYaMapato').getContext('2d');
