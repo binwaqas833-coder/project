@@ -412,7 +412,7 @@
         .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
 
         /* ── STATIONS ── */
-        .stations-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+        .stations-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(100px, 1fr));gap: 10px}
         .station-box {
             background: rgba(255,255,255,0.12);
             backdrop-filter: var(--blur);
