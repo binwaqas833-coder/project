@@ -649,57 +649,55 @@
             font-family: 'Space Mono', monospace;
             letter-spacing: 0.5px;
         }
+/* ─── RESPONSIVE DESIGN ─── */
 
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 768px) {
-    /* 1. Kuficha sidebar */
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.active { transform: translateX(0); }
-    
-    /* 2. Kurekebisha layout ya main content */
-    .main-content { margin-left: 0; max-width: 100%; padding: 16px; }
-    
-    /* 3. Kurekebisha Topbar ili vitu vikae vizuri */
-    .topbar {
-        padding: 10px 15px;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center; 
-        gap: 15px; 
+/* Kwenye Simu (0px - 768px) */
+@media (max-width: 768px) {
+    /* Sidebar inajificha */
+    .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 1000;
+    }
+    .sidebar.active {
+        transform: translateX(0);
     }
 
-    .menu-toggle { 
-        display: block !important; /* Lazimisha ionekane */
+    /* Button ya kufunga (X) inaonekana tu kwenye simu */
+    .close-btn {
+        display: none !important;
+        
+    }
+
+    /* Main content inajaza kioo */
+    .main-content {
+        margin-left: 0;
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    /* Topbar na Menu Toggle */
+    .menu-toggle {
+        display: block !important;
+        background: none;
+        border: none;
+        color: var(--accent);
         font-size: 20px;
-        padding: 5px;
+        cursor: pointer;
+        padding: 8px;
         margin-top: -60px;
-        background: none; border: none; color: white;
     }
-
-    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    
+    .cards-grid { grid-template-columns: 1fr; }
     .tariff-grid { grid-template-columns: 1fr; }
 }
- 
-        @media (max-width: 1200px) {
-            .cards-grid { grid-template-columns: repeat(2, 1fr); }
-            .main-grid { grid-template-columns: 1fr; }
-            .tariff-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 900px) {
-            .stations-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
-            .main-content { margin-left: 0; max-width: 100%; padding: 16px; }
-            .menu-toggle { display: block; }
-            .cards-grid { grid-template-columns: repeat(2, 1fr); }
-            .tariff-grid { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 480px) {
-            .cards-grid { grid-template-columns: 1fr; }
-            .stations-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+
+/* Kwenye Desktop (Zaidi ya 768px) */
+@media (min-width: 769px) {
+    .close-btn { display: none !important; }
+    .menu-toggle { display: none !important; }
+}
     </style>
 </head>
 <body>
@@ -707,14 +705,16 @@
 <!-- ═══ SIDEBAR ═══ -->
 <nav class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <div class="brand-logo">
-            <div class="brand-icon"><i class="fa-solid fa-wifi"></i></div>
-            <div>
-                <div class="brand-name">Bin Waqas</div>
-            </div>
+    <button class="close-btn" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+    
+    <div class="brand-logo">
+        <div class="brand-icon"><i class="fa-solid fa-wifi"></i></div>
+        <div>
+            <div class="brand-name">Bin Waqas</div>
         </div>
-        <div class="brand-sub">5G Wi-Fi Premium</div>
     </div>
+    <div class="brand-sub">5G Wi-Fi Premium</div>
+</div>
 
     <div class="sidebar-section-label">Navigation</div>
     <ul class="sidebar-menu">
@@ -1096,6 +1096,8 @@ new Chart(ctx, {
     }
 });
 
+
+
 function funguaModalVocha() { document.getElementById("vochaModal").classList.add("active"); }
 function fungaModalVocha() { document.getElementById("vochaModal").classList.remove("active"); }
 
@@ -1138,6 +1140,22 @@ function tafutaKwenyeJedwali() {
         rows[i].style.display = (matchSearch && matchFilter) ? "" : "none";
     }
 }
+const sidebar = document.getElementById('sidebar');
+
+    function toggleSidebar() {
+        sidebar.classList.toggle('active');
+    }
+
+    // Kufunga sidebar ukibonyeza nje (kama mtumiaji anataka)
+    document.addEventListener('click', function(event) {
+        const isClickInside = sidebar.contains(event.target) || 
+                              event.target.classList.contains('menu-toggle') ||
+                              event.target.closest('.menu-toggle');
+        
+        if (!isClickInside && sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+        }
+    });
 </script>
 </body>
 </html>
